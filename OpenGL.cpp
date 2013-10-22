@@ -38,3 +38,71 @@ for (int i = 0; enables[i] != enablesMax; ++i)
     qDebug() << "glEnable has changed " << i << "=" << glIsEnabled(enables[i]);
     }
   }
+  
+  
+  
+/** Paint a black box in OpenGL
+*/
+void QVTKQuickItemPrivate::paintBlackBox()
+{
+  Q_Q(QVTKQuickItem);
+  qDebug() << "start blackbox";
+  static const GLfloat lightPos[4] = { 5.0f, 5.0f, 10.0f, 1.0f };
+
+  glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  //glEnable(GL_DEPTH_TEST);
+  glDisable(GL_DEPTH_TEST);
+  glEnable(GL_NORMALIZE);
+  glDisable(GL_SCISSOR_TEST);
+  glDisable(GL_STENCIL_TEST);
+  glDisable(GL_ALPHA_TEST);
+
+  //int side = qMin(window()->width(), window()->height());
+  //glViewport((window()->width() - side) / 2, (window()->height() - side) / 2, side, side);
+  //glViewport(this-x(), this->y(), this->width(), this->height());
+  QPointF originInWindow= q->mapToScene(QPointF(0,0));
+  qDebug() << "origin: " << originInWindow.x() << originInWindow.y();
+  qDebug() << "gemo: " << originInWindow.x() << q->window()->height() - q->height() - originInWindow.y() <<
+              static_cast<GLsizei>(q->width())<< static_cast<GLsizei>(q->height());
+  glViewport(originInWindow.x(), q->window()->height() - q->height() - originInWindow.y(),
+             static_cast<GLsizei>(q->width()), static_cast<GLsizei>(q->height()));
+//  glViewport(0, 0,
+//             static_cast<GLsizei>(this->window()->width()), static_cast<GLsizei>(this->window()->height()));
+
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glFrustum(-1.0, +1.0, -1.0, 1.0, 5.0, 60.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glTranslated(0.0, 0.0, -40.0);
+
+
+
+//glEnable(GL_BLEND);
+//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+//glMatrixMode(GL_PROJECTION);
+//glLoadIdentity();
+//glOrtho(0,window()->width(), window()->height(), 0,0,1);
+
+//glMatrixMode(GL_MODELVIEW);
+//glLoadIdentity();
+//glTranslated(0.0, 0.0, 10.0);
+
+  glClearColor(1., 0., 0., 1);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClearColor(0, 1, 0, 1);
+
+  glColor3f(0.f,0.f,1.f);
+  glBegin(GL_QUADS);
+  glVertex3f(-1.f,-1.f,10.f);
+  glVertex3f(-1.f,1.f,10.f);
+  glVertex3f(1.f,1.f,10.f);
+  glVertex3f(1.f,-1.f,10.f);
+  glEnd();
+  qDebug() << "end blackbox";
+}
+
