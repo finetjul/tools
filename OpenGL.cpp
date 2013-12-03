@@ -106,3 +106,13 @@ void QVTKQuickItemPrivate::paintBlackBox()
   qDebug() << "end blackbox";
 }
 
+/** Save a render window into an image
+*/
+  vtkWindowToImageFilter* wToI = vtkWindowToImageFilter::New();
+  wToI->SetInput(this->RenderWindow);
+  vtkPNGWriter* pngWriter = vtkPNGWriter::New();
+  pngWriter->SetInputConnection(wToI->GetOutputPort());
+  pngWriter->SetFileName("/home/julien/tmp/img.png");
+  pngWriter->Write();
+  wToI->Delete();
+  pngWriter->Delete();
